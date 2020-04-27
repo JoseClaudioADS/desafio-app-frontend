@@ -23,19 +23,28 @@ const Import: React.FC = () => {
   const history = useHistory();
 
   async function handleUpload(): Promise<void> {
-    // const data = new FormData();
+    for (const f of uploadedFiles) {
+      const data = new FormData();
 
-    // TODO
+      data.append('file', f.file);
 
-    try {
-      // await api.post('/transactions/import', data);
-    } catch (err) {
-      // console.log(err.response.error);
+      try {
+        await api.post('/transactions/import', data);
+      } catch (err) {
+        console.log(err.response.error);
+      }
     }
   }
 
   function submitFile(files: File[]): void {
-    // TODO
+    let up = uploadedFiles;
+    up = up.concat(
+      files.map(file => {
+        return { file, name: file.name, readableSize: '1' } as FileProps;
+      }),
+    );
+
+    setUploadedFiles([...up]);
   }
 
   return (
@@ -52,7 +61,7 @@ const Import: React.FC = () => {
               <img src={alert} alt="Alert" />
               Permitido apenas arquivos CSV
             </p>
-            <button onClick={handleUpload} type="button">
+            <button onClick={() => handleUpload()} type="button">
               Enviar
             </button>
           </Footer>
